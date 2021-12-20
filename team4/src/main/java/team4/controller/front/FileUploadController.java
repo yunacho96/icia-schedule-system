@@ -24,7 +24,6 @@ public class FileUploadController {
 	
 	@PostMapping("/upload")
 	public String upload(ModelAndView mav, @RequestParam("file1") MultipartFile file) {
-		System.out.println("하이루 아하하하ㅏ ");
 		System.out.println(file.getOriginalFilename());
 		return "redirect:/";
 	}
