@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="team4.database.mapper.ScheduleInterface">
+	
+	<insert id="insAlbum" parameterType="team4.user.beans.ScheduleBean">
+		insert into ab values(#{tecode},#{num},#{path})
+	</insert>
+	
+	<insert id="insSchedule" parameterType="team4.user.beans.ScheduleBean">
+		insert into sd values(#{tecode},#{num},#{mbid},#{title},#{date},#{location},#{contents},#{process},#{open},#{loop})
+	</insert>
+	
+	<select id="getMaxNum" parameterType="team4.user.beans.ScheduleBean" resultType="int">
+		select nvl(max(sd_num),0) from sd where sd_tecode =#{tecode} and sd_mbid=#{mbid}
+	</select>
+	
+	<select id="getMonSchedule" parameterType="team4.user.beans.ScheduleBean" resultType="team4.user.beans.ScheduleBean">
+		select * from schedulelistview where to_char("date", 'yyyyMM') = to_char(to_date(#{date},'yyyyMMdd'),'yyyyMM') and 
+                                ("tecode" in(select td_tecode from td where td_mbid=#{mbid}) 
+                                and "open"='O')
+                                or ("mbid" = #{mbid} and "open"='N')
+	</select>
+	
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="team4.database.mapper.ShareInterface">
+	<select id="getTeamList" parameterType="team4.user.beans.TeamBean" resultType="team4.user.beans.TeamBean">
+		select * from teamlistview where "mbId"=#{mbId}
+	</select>
+	
+	<select id="getMemList" parameterType="team4.user.beans.TDetailsBean" resultType="team4.user.beans.TDetailsBean">
+		select * from memberlistview where "teCode"=#{teCode}
+	</select>
+
+	<select id="getTeCode"  parameterType="team4.user.beans.TeamBean" resultType="team4.user.beans.TeamBean">
+		select coalesce(max(to_number(substr(te_code,7,3))),0) as "index" from te where substr(te_code,1,6)= to_char(sysdate,'yyMMdd')
+	</select>
+	
+	<select id="searchFriend" parameterType="team4.user.beans.UserBean" resultType="team4.user.beans.UserBean">
+		select mb_id as "uCode" , mb_name as "uName" from searchlistview where sword like '%' || #{search} || '%'
+	</select>
+	
+	<select id="getFriends"  parameterType="team4.user.beans.TDetailsBean" resultType="team4.user.beans.TDetailsBean">
+	<!-- select fr_receiver as "mbId" from fr where (fr_request = #{mbId}) and fr_accept='1' union  
+	  select fr_request from fr where (fr_receiver = #{mbId}) and fr_accept='1' -->
+	select "reqId" as "mbId", "receiveName" as "mbName"
+	from reqfriendslist
+	where "receiveId"= #{mbId} and "frAccept"=1
+	union
+	select "receiveId" as "mbId" , "receiveName" as "mbName"
+	from receivefriendslist
+	where "reqId" =#{mbId} and "frAccept"=1
+	</select>
+	
+	<select id="getInviteList" parameterType="team4.user.beans.TDetailsBean" resultType="team4.user.beans.TDetailsBean">
+		select "reqId" as "mbId" from receivefriendslist where "receiveId"=#{rmbId} and "frAccept"=#{cgCode}
+	</select>
+	
+	<insert id="insTeamTable" parameterType="team4.user.beans.TeamBean">
+		insert into te values(#{teCode},#{teName})
+	</insert>
+	
+	<insert id="insTeamDetailsTable" parameterType="team4.user.beans.TDetailsBean">
+		insert into td values(#{teCode},#{mbId},#{cgCode})
+	</insert>
+	
+	<insert id="insWaitFriends" parameterType="team4.user.beans.TDetailsBean">
+		insert into fr values (#{mbId},#{rmbId},#{cgCode})
+	</insert>
+	
+	<update id="upReqAccept" parameterType="team4.user.beans.TDetailsBean">
+		update fr set fr_accept=1 where fr_request=#{mbId} and fr_receiver=#{rmbId}
+	</update>
+	
+	<update id="upReqReject" parameterType="team4.user.beans.TDetailsBean">
+		update fr set fr_accept=2 where fr_request=#{mbId} and fr_receiver=#{rmbId}
+	</update>
+	
+
+</mapper>

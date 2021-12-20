@@ -1,0 +1,11 @@
+@charset "UTF-8";
+body{
+	margin:0px;
+	background-color: #f8f8f8;
+}
+.sbox{
+	overflow:hidden;
+}
+.child{
+	float:left;
+}
